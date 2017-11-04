@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using n_queens_solution.solvers;
 
 namespace n_queens_solution
@@ -8,35 +9,67 @@ namespace n_queens_solution
         static void Main(string[] args) 
         {
             ISolver solver;
-            var input  = "";
-            do {
-                Console.WriteLine("Choose an algorithm (0 for exit)");
-                Console.WriteLine("");
-                Console.WriteLine("1. Breadth-first search ");
-                Console.WriteLine("2. Depth-first search");
-                Console.WriteLine("3. Uniform cost search");
-                
-                input = Console.ReadLine();
 
-                switch (input)
+            int dimension = 0;
+            string input  = "";
+            do {
+                Console.WriteLine("Choose an algorithm and Dimension (Enter for Exit)");
+                Console.WriteLine("");
+                Console.WriteLine("BFS");
+                Console.WriteLine("DFS");
+                Console.WriteLine("UCS");
+                Console.WriteLine("For example [     DFS 8     ] means [ Solve 8 Queens with DFS ]");
+                
+                string[] read = Console.ReadLine().Split(' ');
+
+                try
                 {
-                    case "0":
+                    input = read[0].Trim();
+                    if (input != "")
+                    {
+                        dimension = Convert.ToInt32(read[1]);   
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Invalid Input");
+                    continue;
+                }
+
+                switch (input.ToUpper())
+                {
+                    case "":
                     {
                         break;
                     }
-                    case "1":
+                    case "BFS":
                     {
-                        solver = new BFSSolver();
+                        solver = new BFSSolver(dimension);
+                        if (solver.Solve())
+                        {
+                            Console.WriteLine("Solved in " + solver.ElapsedTime + " ms");
+                            File.AppendAllText("log.txt","BFS:"+ dimension+":"+solver.ElapsedTime + "ms\r\n" );          
+                        }
                         break;
                     }
-                    case "2":
+                    case "DFS":
                     {
-                        solver = new DFSSolver();
+                        solver = new DFSSolver(dimension);
+                        if (solver.Solve())
+                        {
+                            Console.WriteLine("Solved in " + solver.ElapsedTime + " ms");
+                            File.AppendAllText("log.txt","DFS:"+ dimension+":"+solver.ElapsedTime + "ms\r\n" ); 
+                        }
                         break;
                     }
-                    case "3":
+                    case "UCS":
                     {
-                        solver = new UCSSolver();
+                        solver = new UCSSolver(dimension);
+                        if (solver.Solve())
+                        {
+                            Console.WriteLine("Solved in " + solver.ElapsedTime + " ms");
+                            File.AppendAllText("log.txt","UCS:"+ dimension+":"+solver.ElapsedTime + "ms\r\n" );
+                        }
                         break;
                     }
                     default:
@@ -45,7 +78,10 @@ namespace n_queens_solution
                         break;
                     }
                 }
-            } while (input != "0");
+
+            Console.WriteLine("----------------------------");
+
+            } while (input != "");
         }
     }
 }
